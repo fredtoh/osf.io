@@ -107,7 +107,7 @@ class ArchiverTask(celery.Task):
         archiver_signals.archive_fail.send(dst, errors=errors)
 
 
-@celery_app.task(base=ArchiverTask, name="archiver.stat_addon")
+@celery_app.task(base=ArchiverTask, name='archiver.stat_addon')
 @logged('stat_addon')
 def stat_addon(addon_short_name, job_pk):
     """Collect metadata about the file tree of a given addon
@@ -144,7 +144,7 @@ def stat_addon(addon_short_name, job_pk):
     return result
 
 
-@celery_app.task(base=ArchiverTask, name="archiver.make_copy_request")
+@celery_app.task(base=ArchiverTask, name='archiver.make_copy_request')
 @logged('make_copy_request')
 def make_copy_request(job_pk, url, data):
     """Make the copy request to the WaterBulter API and handle
@@ -159,7 +159,7 @@ def make_copy_request(job_pk, url, data):
     job = ArchiveJob.load(job_pk)
     src, dst, user = job.info()
     provider = data['source']['provider']
-    logger.info("Sending copy request for addon: {0} on node: {1}".format(provider, dst._id))
+    logger.info('Sending copy request for addon: {0} on node: {1}'.format(provider, dst._id))
     res = requests.post(url, data=json.dumps(data))
     if res.status_code not in (http.OK, http.CREATED, http.ACCEPTED):
         raise HTTPError(res.status_code)
@@ -186,7 +186,7 @@ def make_waterbutler_payload(src, dst, addon_short_name, rename, cookie, revisio
     return ret
 
 
-@celery_app.task(base=ArchiverTask, name="archiver.archive_addon")
+@celery_app.task(base=ArchiverTask, name='archiver.archive_addon')
 @logged('archive_addon')
 def archive_addon(addon_short_name, job_pk, stat_result):
     """Archive the contents of an addon by making a copy request to the
@@ -206,7 +206,7 @@ def archive_addon(addon_short_name, job_pk, stat_result):
     create_app_context()
     job = ArchiveJob.load(job_pk)
     src, dst, user = job.info()
-    logger.info("Archiving addon: {0} on node: {1}".format(addon_short_name, src._id))
+    logger.info('Archiving addon: {0} on node: {1}'.format(addon_short_name, src._id))
     src_provider = src.get_addon(addon_name)
     folder_name = src_provider.archive_folder_name
     cookie = user.get_or_create_cookie()
@@ -225,7 +225,7 @@ def archive_addon(addon_short_name, job_pk, stat_result):
         make_copy_request.delay(job_pk=job_pk, url=copy_url, data=data)
 
 
-@celery_app.task(base=ArchiverTask, name="archiver.archive_node")
+@celery_app.task(base=ArchiverTask, name='archiver.archive_node')
 @logged('archive_node')
 def archive_node(stat_results, job_pk):
     """First use the results of #stat_node to check disk usage of the
@@ -239,7 +239,7 @@ def archive_node(stat_results, job_pk):
     create_app_context()
     job = ArchiveJob.load(job_pk)
     src, dst, user = job.info()
-    logger.info("Archiving node: {0}".format(src._id))
+    logger.info('Archiving node: {0}'.format(src._id))
 
     if not isinstance(stat_results, list):
         stat_results = [stat_results]
@@ -278,7 +278,7 @@ def archive(job_pk):
     job = ArchiveJob.load(job_pk)
     src, dst, user = job.info()
     logger = get_task_logger(__name__)
-    logger.info("Received archive task for Node: {0} into Node: {1}".format(src._id, dst._id))
+    logger.info('Received archive task for Node: {0} into Node: {1}'.format(src._id, dst._id))
     return celery.chain(
         [
             celery.group(
@@ -294,7 +294,7 @@ def archive(job_pk):
         ]
     )
 
-@celery_app.task(base=ArchiverTask, name="archiver.archive_success")
+@celery_app.task(base=ArchiverTask, name='archiver.archive_success')
 @logged('archive_success')
 def archive_success(dst_pk, job_pk):
     """Archiver's final callback. For the time being the use case for this task

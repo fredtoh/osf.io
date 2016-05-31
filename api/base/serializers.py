@@ -557,9 +557,9 @@ class RelationshipField(ser.HyperlinkedIdentityField):
         format = self.context.get('format', None)
 
         assert request is not None, (
-            "`%s` requires the request in the serializer"
+            '`%s` requires the request in the serializer'
             " context. Add `context={'request': request}` when instantiating "
-            "the serializer." % self.__class__.__name__
+            'the serializer.' % self.__class__.__name__
         )
 
         # By default use whatever format is given for the current context
@@ -587,9 +587,9 @@ class RelationshipField(ser.HyperlinkedIdentityField):
             if value in ('', None):
                 value_string = {'': 'the empty string', None: 'None'}[value]
                 msg += (
-                    " WARNING: The value of the field on the model instance "
+                    ' WARNING: The value of the field on the model instance '
                     "was %s, which may be why it didn't match any "
-                    "entries in your URL conf." % value_string
+                    'entries in your URL conf.' % value_string
                 )
             raise ImproperlyConfigured(msg % self.view_name)
 
